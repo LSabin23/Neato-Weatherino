@@ -1,3 +1,5 @@
+// Open Weather API Key: f8bdae7d507d571fec219a255946d59e
+
 var searchFormEl = document.querySelector('#search-form')
 var cityInputEl = document.querySelector('#city')
 var weatherContainerEl = document.querySelector('#weather-container')
@@ -42,8 +44,46 @@ var displayWeather = function (weather, city) {
   currentDayEl.textContent = city + ' ' + dateObject
 
   currentDayEl.appendChild(iconImageEl)
+
+  // create temp element, add 'Temp: main.temp' text, append temp element to currentDayEl
+  var currentTempEl = document.createElement('p')
+  currentTempEl.textContent = 'Temp: ' + weather.main.temp + '°F'
+  currentDayEl.appendChild(currentTempEl)
+
+  // create wind speed element, add 'Wind: wind.speed' text, append wind element to currentDayEl
+  var currentWindEl = document.createElement('p')
+  currentWindEl.textContent = 'Wind: ' + weather.wind.speed + 'mph'
+  currentDayEl.appendChild(currentWindEl)
+
+  // create humidity element, add 'Humidity: main.humidity' text, append humidity element to currentDayEl
+  var currentHumidEl = document.createElement('p')
+  currentHumidEl.textContent = 'Humidity: ' + weather.main.humidity + '%'
+  currentDayEl.appendChild(currentHumidEl)
+
+  // create UV index element, send coord.lat and coord.lon to OneWeather again to retrieve UV index, add 'UV Index: response' text, append UV index element to currentDayEl
+  var currentCityLat = weather.coord.lat
+  var currentCityLon = weather.coord.lon
+  var currentUviEl = document.createElement('p')
+
+  var openCallUrl = 'https://api.openweathermap.org/data/2.5/onecall?lat=' + currentCityLat + '&lon=' + currentCityLon + '&units=imperial&appid=f8bdae7d507d571fec219a255946d59e'
+  fetch(openCallUrl).then(function (response) {
+    response.json().then(function (data) {
+      var UvIndexVal = data.current.uvi
+      currentUviEl.textContent = 'UV index: ' + UvIndexVal
+
+      if (UvIndexVal <= 2) {
+        currentUviEl.classList.add('favorable')
+        currentUviEl.classList.remove('moderate', 'severe')
+      } else if (UvIndexVal >= 3 || UvIndexVal <= 7) {
+        currentUviEl.classList.add('moderate')
+        currentUviEl.classList.remove('favorable', 'severe')
+      } else {
+        currentUviEl.classList.add('severe')
+        currentUviEl.classList.remove('moderate', 'favorable')
+      }
+      currentDayEl.appendChild(currentUviEl)
+    })
+  })
 }
 
 searchFormEl.addEventListener('submit', formSubmitHandler)
-
-// Open Weather API Key: f8bdae7d507d571fec219a255946d59e

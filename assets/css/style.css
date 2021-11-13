@@ -1,3 +1,17 @@
 :root {
   --primary: #8fbc8f
 }
+
+.favorable {
+  background-color: green;
+  color: white;
+}
+
+.moderate {
+  background-color: yellow;
+}
+
+.severe {
+  background-color: red;
+  color: white;
+}
