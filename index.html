@@ -10,14 +10,14 @@
 </head>
 <body>
   <header>
-    <h1>Neato Weatherino Dashboard</h1>
+    <h1 class="text-center">Neato Weatherino Dashboard</h1>
   </header>
 
   <main class="container">
     <div class="row">
 
       <!-- search container with form and previous searches container goes here -->
-      <div id="searches" class="col-4">
+      <section id="searches" class="col-4">
         <form id="search-form">
           <label for="city">Search for a city:</label>
           <input type="text" placeholder="enter a city name" name="city" id="city" class="form-input"/>
@@ -27,20 +27,17 @@
         <div id="previous-cities">
           <!-- dynamically add buttons to search for previous cities -->
         </div>
-      </div>
+      </section>
 
-      <div id="weather" class="col-8">
+      <section id="weather-container" class="col-8">
         <!-- current day weather container goes here -->
-        <div id="current-day">
-          <h2>Current Day Weather</h2>
-          <p>Use the search box to search for a city and display current weather data below.</p>
-        </div>
+        <div id="current-day"></div>
 
         <!-- 5-Day Forecast container goes here -->
-        <div id="5-day-forecast">
+        <div id="five-day-forecast">
           <h2>5-Day Forecast</h2>
         </div>
-      </div>
+      </section>
 
     </div>
   </main>
