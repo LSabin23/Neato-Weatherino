@@ -27,6 +27,48 @@ var formSubmitHandler = function (event) {
   }
 }
 
+var createForecastCards = function (oneCallUrl) {
+  fetch(oneCallUrl).then(function (response) {
+    response.json().then(function (data) {
+      console.log(data)
+      for (var i = 0; i < 6; i++) {
+        // create card element
+        var cardEl = document.createElement('div')
+        cardEl.classList.add('bg-secondary')
+
+        // display date
+        var cardTitle = document.createElement('h5')
+        cardTitle.textContent = data.daily[i].dt
+        cardEl.appendChild(cardTitle)
+
+        // display icon
+        var cardIcon = 'http://openweathermap.org/img/wn/' + data.daily[i].weather[i].icon + '@2x.png'
+        var cardImgEl = document.createElement('img')
+        cardImgEl.setAttribute('src', cardIcon)
+        cardEl.appendChild(cardImgEl)
+
+        // display temp
+        var cardTempEl = document.createElement('p')
+        cardTempEl.textContent = data.daily[i].temp.day + '°F'
+        cardEl.appendChild(cardTempEl)
+
+        // display wind
+        var cardWindEl = document.createElement('p')
+        cardWindEl.textContent = data.daily[i].wind_speed + 'mph'
+        cardEl.appendChild(cardWindEl)
+
+        // display humidity
+        var cardHumidEl = document.createElement('p')
+        cardHumidEl.textContent = data.daily[i].humidity + '%'
+        cardEl.appendChild(cardHumidEl)
+
+        // append entire card element to five day forecast container
+        futureWeatherEl.appendChild(cardEl)
+      }
+    })
+  })
+}
+
 var displayWeather = function (weather, city) {
   console.log(weather)
 
@@ -65,8 +107,8 @@ var displayWeather = function (weather, city) {
   var currentCityLon = weather.coord.lon
   var currentUviEl = document.createElement('p')
 
-  var openCallUrl = 'https://api.openweathermap.org/data/2.5/onecall?lat=' + currentCityLat + '&lon=' + currentCityLon + '&units=imperial&appid=f8bdae7d507d571fec219a255946d59e'
-  fetch(openCallUrl).then(function (response) {
+  var oneCallUrl = 'https://api.openweathermap.org/data/2.5/onecall?lat=' + currentCityLat + '&lon=' + currentCityLon + '&units=imperial&appid=f8bdae7d507d571fec219a255946d59e'
+  fetch(oneCallUrl).then(function (response) {
     response.json().then(function (data) {
       var UvIndexVal = data.current.uvi
       currentUviEl.textContent = 'UV index: ' + UvIndexVal
@@ -84,6 +126,8 @@ var displayWeather = function (weather, city) {
       currentDayEl.appendChild(currentUviEl)
     })
   })
+
+  createForecastCards(oneCallUrl)
 }
 
 searchFormEl.addEventListener('submit', formSubmitHandler)
