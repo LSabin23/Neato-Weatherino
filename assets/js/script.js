@@ -7,7 +7,8 @@ var currentDayHeadingEl = document.querySelector('#current-day-heading')
 var currentDayContentEl = document.querySelector('#current-day-content')
 var futureWeatherEl = document.querySelector('#five-day-forecast')
 
-var savedCitiesList = localStorage.getItem('cities') || []
+// if 'cities' doesn't exist in localStorage set var to empty array instead
+var savedCitiesList = JSON.parse(localStorage.getItem('cities')) || []
 
 // START OPEN WEATHER API CALL
 var getCurrentWeather = function (city) {
@@ -29,7 +30,8 @@ var loadSavedCities = function () {
     previousCitiesEl.textContent = ''
     for (var i = 0; i < savedCitiesList.length; i++) {
       var prevCityBtnEl = document.createElement('button')
-      prevCityBtnEl.textContent = savedCitiesList[i].textContent
+      prevCityBtnEl.classList.add('btn-block', 'rounded', 'btn-secondary', 'w-100', 'mb-2', 'prev-city-btn')
+      prevCityBtnEl.textContent = savedCitiesList[i]
 
       previousCitiesEl.appendChild(prevCityBtnEl)
     }
@@ -55,15 +57,8 @@ var formSubmitHandler = function (event) {
 
 // START SAVE CITY NAME TO LOCAL STORAGE
 var saveCityName = function (cityName) {
-  if (savedCitiesList.length === 0) {
-    console.log(savedCitiesList)
-    savedCitiesList.push(cityName)
-    window.localStorage.setItem('cities', savedCitiesList)
-  } else {
-    // localStorage.getItem('cities')
-    savedCitiesList.push(cityName)
-  }
-  // loadSavedCities(cityName)
+  savedCitiesList.push(cityName)
+  localStorage.setItem('cities', JSON.stringify(savedCitiesList))
 }
 // END SAVE CITY NAME TO LOCAL STORAGE
 
@@ -190,5 +185,13 @@ var displayWeather = function (weather, city) {
 }
 // END CURRENT DAY
 
+// START PREVIOUS CITY BUTTON CLICK FUNCTION
+var prevCityBtnHandler = function (event) {
+  var btnName = event.target.textContent
+  getCurrentWeather(btnName)
+}
+// END PREVIOUS CITY BUTTON CLICK FUNCTION
+
 searchFormEl.addEventListener('submit', formSubmitHandler)
+previousCitiesEl.addEventListener('click', prevCityBtnHandler)
 loadSavedCities()
