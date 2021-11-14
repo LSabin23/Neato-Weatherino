@@ -7,7 +7,7 @@ var currentDayHeadingEl = document.querySelector('#current-day-heading')
 var currentDayContentEl = document.querySelector('#current-day-content')
 var futureWeatherEl = document.querySelector('#five-day-forecast')
 
-var savedCitiesList = []
+var savedCitiesList = localStorage.getItem('cities') || []
 
 // START OPEN WEATHER API CALL
 var getCurrentWeather = function (city) {
@@ -22,8 +22,7 @@ var getCurrentWeather = function (city) {
 
 // START LOAD SAVED CITIES
 var loadSavedCities = function () {
-  savedCitiesList = localStorage.getItem('cities')
-  if (!savedCitiesList) {
+  if (savedCitiesList.length === 0) {
     previousCitiesEl.textContent = 'No saved city data available.'
   } else {
     console.log('Saved cities exist.')
@@ -57,12 +56,14 @@ var formSubmitHandler = function (event) {
 // START SAVE CITY NAME TO LOCAL STORAGE
 var saveCityName = function (cityName) {
   if (savedCitiesList.length === 0) {
-    localStorage.setItem('cities', cityName)
+    console.log(savedCitiesList)
+    savedCitiesList.push(cityName)
+    window.localStorage.setItem('cities', savedCitiesList)
   } else {
     // localStorage.getItem('cities')
     savedCitiesList.push(cityName)
   }
-  loadSavedCities(cityName)
+  // loadSavedCities(cityName)
 }
 // END SAVE CITY NAME TO LOCAL STORAGE
 
