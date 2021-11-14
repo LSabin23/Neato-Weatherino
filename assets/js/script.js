@@ -2,9 +2,12 @@
 
 var searchFormEl = document.querySelector('#search-form')
 var cityInputEl = document.querySelector('#city')
+var previousCitiesEl = document.querySelector('#previous-cities')
 var currentDayHeadingEl = document.querySelector('#current-day-heading')
 var currentDayContentEl = document.querySelector('#current-day-content')
 var futureWeatherEl = document.querySelector('#five-day-forecast')
+
+var savedCitiesList = []
 
 // START OPEN WEATHER API CALL
 var getCurrentWeather = function (city) {
@@ -17,6 +20,24 @@ var getCurrentWeather = function (city) {
 }
 // END OPEN WEATHER API CALL
 
+// START LOAD SAVED CITIES
+var loadSavedCities = function () {
+  savedCitiesList = localStorage.getItem('cities')
+  if (!savedCitiesList) {
+    previousCitiesEl.textContent = 'No saved city data available.'
+  } else {
+    console.log('Saved cities exist.')
+    previousCitiesEl.textContent = ''
+    for (var i = 0; i < savedCitiesList.length; i++) {
+      var prevCityBtnEl = document.createElement('button')
+      prevCityBtnEl.textContent = savedCitiesList[i].textContent
+
+      previousCitiesEl.appendChild(prevCityBtnEl)
+    }
+  }
+}
+// END LOAD SAVED CITIES
+
 // START SEARCH FORM SUBMISSION HANDLER
 var formSubmitHandler = function (event) {
   event.preventDefault()
@@ -24,12 +45,26 @@ var formSubmitHandler = function (event) {
 
   if (cityName) {
     getCurrentWeather(cityName)
+    saveCityName(cityName)
+    loadSavedCities()
     cityInputEl.value = ''
   } else {
     alert('Please enter a city name.')
   }
 }
 // END SEARCH FORM SUBMISSION HANDLER
+
+// START SAVE CITY NAME TO LOCAL STORAGE
+var saveCityName = function (cityName) {
+  if (savedCitiesList.length === 0) {
+    localStorage.setItem('cities', cityName)
+  } else {
+    // localStorage.getItem('cities')
+    savedCitiesList.push(cityName)
+  }
+  loadSavedCities(cityName)
+}
+// END SAVE CITY NAME TO LOCAL STORAGE
 
 // START FORECAST CARDS
 var createForecastCards = function (oneCallUrl) {
@@ -127,6 +162,7 @@ var displayWeather = function (weather, city) {
   var currentCityLat = weather.coord.lat
   var currentCityLon = weather.coord.lon
   var currentUviEl = document.createElement('p')
+  currentUviEl.classList.add('rounded')
 
   var oneCallUrl = 'https://api.openweathermap.org/data/2.5/onecall?lat=' + currentCityLat + '&lon=' + currentCityLon + '&units=imperial&appid=f8bdae7d507d571fec219a255946d59e'
   fetch(oneCallUrl).then(function (response) {
@@ -154,3 +190,4 @@ var displayWeather = function (weather, city) {
 // END CURRENT DAY
 
 searchFormEl.addEventListener('submit', formSubmitHandler)
+loadSavedCities()

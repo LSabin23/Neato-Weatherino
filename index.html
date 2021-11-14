@@ -17,9 +17,9 @@
     <div class="row">
 
       <!-- search container with form and previous searches container goes here -->
-      <section id="searches" class="col-4">
+      <section id="searches" class="col-3">
         <form id="search-form">
-          <label for="city">Search for a city:</label>
+          <label for="city" class="fw-bold">Search for a city:</label>
           <input type="text" placeholder="enter a city name" name="city" id="city" class="form-input"/>
           <button type="submit" class="btn btn-primary">Search</button>
         </form>
@@ -29,14 +29,14 @@
         </div>
       </section>
 
-      <section id="weather-container" class="col-8">
+      <section id="weather-container" class="col-9">
         <!-- current day weather container goes here -->
-        <h2 id="current-day-heading"></h2>
-        <div id="current-day-content" class="fw-bold"></div>
+        <h2 id="current-day-heading">Search a city to see current weather and</h2>
+        <div id="current-day-content" class="fw-bold px-2"></div>
 
         <!-- 5-Day Forecast container goes here -->
         <div>
-          <h2>5-Day Forecast:</h2>
+          <h2>5-Day Forecast</h2>
           <div id="five-day-forecast" class="row">
             <!-- dynamically create forecast cards to go here -->
           </div>
