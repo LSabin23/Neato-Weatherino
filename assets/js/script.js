@@ -2,10 +2,11 @@
 
 var searchFormEl = document.querySelector('#search-form')
 var cityInputEl = document.querySelector('#city')
-var weatherContainerEl = document.querySelector('#weather-container')
-var currentDayEl = document.querySelector('#current-day')
+var currentDayHeadingEl = document.querySelector('#current-day-heading')
+var currentDayContentEl = document.querySelector('#current-day-content')
 var futureWeatherEl = document.querySelector('#five-day-forecast')
 
+// START OPEN WEATHER API CALL
 var getCurrentWeather = function (city) {
   var apiUrl = 'https://api.openweathermap.org/data/2.5/weather?q=' + city + '&units=imperial&appid=f8bdae7d507d571fec219a255946d59e'
   fetch(apiUrl).then(function (response) {
@@ -14,7 +15,9 @@ var getCurrentWeather = function (city) {
     })
   })
 }
+// END OPEN WEATHER API CALL
 
+// START SEARCH FORM SUBMISSION HANDLER
 var formSubmitHandler = function (event) {
   event.preventDefault()
   var cityName = cityInputEl.value.trim()
@@ -26,40 +29,52 @@ var formSubmitHandler = function (event) {
     alert('Please enter a city name.')
   }
 }
+// END SEARCH FORM SUBMISSION HANDLER
 
+// START FORECAST CARDS
 var createForecastCards = function (oneCallUrl) {
   fetch(oneCallUrl).then(function (response) {
     response.json().then(function (data) {
       console.log(data)
-      for (var i = 0; i < 6; i++) {
+      // clear futureWeatherEl to add new content
+      futureWeatherEl.innerHTML = ''
+
+      for (var i = 1; i < 6; i++) {
         // create card element
         var cardEl = document.createElement('div')
-        cardEl.classList.add('bg-secondary')
+        cardEl.classList.add('bg-primary', 'bg-gradient', 'text-white', 'col-2', 'mx-auto', 'px-auto', 'rounded')
 
-        // display date
+        // create date element
         var cardTitle = document.createElement('h5')
-        cardTitle.textContent = data.daily[i].dt
+
+        // convert Unix timestamp to readable date
+        var cardUnixTimestamp = data.daily[i].dt
+        var cardMillUnixValue = cardUnixTimestamp * 1000
+        var cardDate = new Date(cardMillUnixValue).toLocaleDateString()
+
+        // display date on card
+        cardTitle.textContent = cardDate
         cardEl.appendChild(cardTitle)
 
         // display icon
-        var cardIcon = 'http://openweathermap.org/img/wn/' + data.daily[i].weather[i].icon + '@2x.png'
+        var cardIcon = 'http://openweathermap.org/img/wn/' + data.daily[i].weather[0].icon + '@2x.png'
         var cardImgEl = document.createElement('img')
         cardImgEl.setAttribute('src', cardIcon)
         cardEl.appendChild(cardImgEl)
 
         // display temp
         var cardTempEl = document.createElement('p')
-        cardTempEl.textContent = data.daily[i].temp.day + '°F'
+        cardTempEl.textContent = 'Temp: ' + data.daily[i].temp.day + '°F'
         cardEl.appendChild(cardTempEl)
 
         // display wind
         var cardWindEl = document.createElement('p')
-        cardWindEl.textContent = data.daily[i].wind_speed + 'mph'
+        cardWindEl.textContent = 'Wind: ' + data.daily[i].wind_speed + 'mph'
         cardEl.appendChild(cardWindEl)
 
         // display humidity
         var cardHumidEl = document.createElement('p')
-        cardHumidEl.textContent = data.daily[i].humidity + '%'
+        cardHumidEl.textContent = 'Humidity: ' + data.daily[i].humidity + '%'
         cardEl.appendChild(cardHumidEl)
 
         // append entire card element to five day forecast container
@@ -68,7 +83,9 @@ var createForecastCards = function (oneCallUrl) {
     })
   })
 }
+// END FORECAST CARDS
 
+// START CURRENT DAY
 var displayWeather = function (weather, city) {
   console.log(weather)
 
@@ -82,25 +99,29 @@ var displayWeather = function (weather, city) {
   var millUnixValue = unixTimestamp * 1000
   var dateObject = new Date(millUnixValue).toLocaleDateString()
 
-  currentDayEl.textContent = ''
-  currentDayEl.textContent = city + ' ' + dateObject
+  // clear data then add new city name, date, and icon to current day element
+  currentDayHeadingEl.textContent = ''
+  currentDayHeadingEl.textContent = city + ' ' + dateObject
 
-  currentDayEl.appendChild(iconImageEl)
+  currentDayHeadingEl.appendChild(iconImageEl)
+
+  // clear currentDayContentEl to add new content
+  currentDayContentEl.innerHTML = ''
 
   // create temp element, add 'Temp: main.temp' text, append temp element to currentDayEl
   var currentTempEl = document.createElement('p')
   currentTempEl.textContent = 'Temp: ' + weather.main.temp + '°F'
-  currentDayEl.appendChild(currentTempEl)
+  currentDayContentEl.appendChild(currentTempEl)
 
   // create wind speed element, add 'Wind: wind.speed' text, append wind element to currentDayEl
   var currentWindEl = document.createElement('p')
   currentWindEl.textContent = 'Wind: ' + weather.wind.speed + 'mph'
-  currentDayEl.appendChild(currentWindEl)
+  currentDayContentEl.appendChild(currentWindEl)
 
   // create humidity element, add 'Humidity: main.humidity' text, append humidity element to currentDayEl
   var currentHumidEl = document.createElement('p')
   currentHumidEl.textContent = 'Humidity: ' + weather.main.humidity + '%'
-  currentDayEl.appendChild(currentHumidEl)
+  currentDayContentEl.appendChild(currentHumidEl)
 
   // create UV index element, send coord.lat and coord.lon to OneWeather again to retrieve UV index, add 'UV Index: response' text, append UV index element to currentDayEl
   var currentCityLat = weather.coord.lat
@@ -113,21 +134,23 @@ var displayWeather = function (weather, city) {
       var UvIndexVal = data.current.uvi
       currentUviEl.textContent = 'UV index: ' + UvIndexVal
 
-      if (UvIndexVal <= 2) {
+      // add color indicator to UV Index
+      if (UvIndexVal < 3) {
         currentUviEl.classList.add('favorable')
         currentUviEl.classList.remove('moderate', 'severe')
-      } else if (UvIndexVal >= 3 || UvIndexVal <= 7) {
+      } else if (UvIndexVal >= 3 && UvIndexVal <= 7) {
         currentUviEl.classList.add('moderate')
         currentUviEl.classList.remove('favorable', 'severe')
       } else {
         currentUviEl.classList.add('severe')
         currentUviEl.classList.remove('moderate', 'favorable')
       }
-      currentDayEl.appendChild(currentUviEl)
+      currentDayContentEl.appendChild(currentUviEl)
     })
   })
 
   createForecastCards(oneCallUrl)
 }
+// END CURRENT DAY
 
 searchFormEl.addEventListener('submit', formSubmitHandler)
